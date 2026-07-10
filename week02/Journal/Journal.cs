@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 
 public class Journal
 {
@@ -27,12 +28,12 @@ public class Journal
 
     public void SaveToFile(string filename)
     {
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        string json = JsonSerializer.Serialize(_entries, options);
+
         using (StreamWriter outputFile = new StreamWriter(filename))
         {
-            foreach (Entry entry in _entries)
-            {
-                outputFile.WriteLine(entry.ToFileString());
-            }
+            outputFile.Write(json);
         }
 
         Console.WriteLine($"Journal saved to {filename}");
@@ -46,14 +47,10 @@ public class Journal
             return;
         }
 
-        _entries = new List<Entry>();
+        string json = File.ReadAllText(filename);
+        List<Entry> loadedEntries = JsonSerializer.Deserialize<List<Entry>>(json);
 
-        string[] lines = File.ReadAllLines(filename);
-        foreach (string line in lines)
-        {
-            Entry entry = Entry.FromFileString(line);
-            _entries.Add(entry);
-        }
+        _entries = loadedEntries;
 
         Console.WriteLine($"Journal loaded from {filename}");
     }

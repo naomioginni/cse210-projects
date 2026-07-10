@@ -1,10 +1,13 @@
 using System;
 
-// Creativity note (for your submission comment):
-// This program uses three classes (Entry, PromptGenerator, Journal) to
-// demonstrate abstraction — the Program class never manipulates raw
-// entry data or file text directly; it only calls high-level methods
-// like journal.AddEntry(), journal.SaveToFile(), etc.
+// Creativity note for submission comment:
+// This program exceeds the core requirements in two ways:
+// 1. Each journal entry stores an additional "Mood" field, letting the
+//    user tag how they felt when writing the entry.
+// 2. The journal is saved/loaded as JSON (using System.Text.Json)
+//    instead of a custom delimiter-based text format. This automatically
+//    and correctly handles commas, quotes, and other special characters
+//    in the user's responses without needing custom escaping logic.
 
 class Program
 {
@@ -34,9 +37,12 @@ class Program
                 Console.Write("> ");
                 string response = Console.ReadLine();
 
+                Console.Write("How would you describe your mood? ");
+                string mood = Console.ReadLine();
+
                 string date = DateTime.Now.ToShortDateString();
 
-                Entry entry = new Entry(date, prompt, response);
+                Entry entry = new Entry(date, prompt, response, mood);
                 journal.AddEntry(entry);
             }
             else if (choice == "2")
